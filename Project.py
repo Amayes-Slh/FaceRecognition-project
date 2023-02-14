@@ -5,7 +5,7 @@ import numpy as np
 import math
 
 
-def face_confidence(face_distance, face_match_threshold=0.6):
+def precision(face_distance, face_match_threshold=0.6):
     range = (1.0 - face_match_threshold)
     linear_val = (1.0 - face_distance) / (range * 2.0)
 
@@ -33,7 +33,7 @@ class FaceRecognition:
             face_encoding = face_recognition.face_encodings(face_image)[0]
             self.known_face_encodings.append(face_encoding)
             self.known_face_names.append(image)
-        print(self.known_face_names)
+        
 
     def run_recognition(self):
         video_capture = cv2.VideoCapture(0)
@@ -59,16 +59,16 @@ class FaceRecognition:
                  
                     matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding)
                     name = "Unknown"
-                    confidence = '???'
+                    accuracy = '???'
 
                     face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
 
                     best_match_index = np.argmin(face_distances)
                     if matches[best_match_index]:
                         name = self.known_face_names[best_match_index]
-                        confidence = face_confidence(face_distances[best_match_index])
+                        accuracy = precision(face_distances[best_match_index])
 
-                    self.face_names.append(f'{name} ({confidence})')
+                    self.face_names.append(f'{name} ({accuracy})')
 
             self.process_current_frame = not self.process_current_frame
 
@@ -84,7 +84,7 @@ class FaceRecognition:
                 cv2.putText(frame, name, (left + 6, bottom - 6), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255, 255, 255), 1)
 
         
-            cv2.imshow('Face Recognition', frame)
+            cv2.imshow('Face Recognition Project', frame)
 
             
             if cv2.waitKey(1) == ord('q'):
